@@ -33,7 +33,6 @@ namespace WerkDaze.Api
             if (difference >= WEEK)
             {
                 int weeks = difference / WEEK;
-                //int modulus = difference % WEEK;
 
                 dto1 += weeks * WEEK;
 
@@ -53,8 +52,6 @@ namespace WerkDaze.Api
                 }
 
                 dto1 += 1;
-
-                d1 = ReverseDayHash(dto1);
             }
 
             return workDays;
@@ -84,43 +81,52 @@ namespace WerkDaze.Api
             return (year * STD_DAY_IN_YEAR) + leapDays + ACCUM_DAYS_FOR_MTHS[month] + day;
         }
 
-        internal static DateTime ReverseDayHash(int hash)
+        internal static int ReverseDayHash_FindYear(int hash)
         {
-            int approx_year = hash / STD_DAY_IN_YEAR - 1;
-
-            DateTime dt = new DateTime(approx_year, 1, 1);
-            int approx_hash = GetDayHash(dt);
-
+            int year = (hash / STD_DAY_IN_YEAR) - 1;
+            int approx_hash = GetDayHash(new DateTime(year, 1, 1));
             int difference = hash - approx_hash;
 
             // Self-correction
             while (difference > STD_DAY_IN_YEAR)
             {
-                approx_year += 1;
-
-                dt = new DateTime(approx_year, 1, 1);
-                approx_hash = GetDayHash(dt);
-
+                year += 1;
+                approx_hash = GetDayHash(new DateTime(year, 1, 1));
                 difference = hash - approx_hash;
             }
 
+            return year;
+        }
+
+        internal static int ReverseDayHash_FindMonth(int year, int hash)
+        {
             int month_index = MONTHS_IN_YEAR - 1;
-            dt = new DateTime(approx_year, month_index + 1, 1);
-            approx_hash = GetDayHash(dt);
+            int approx_hash = GetDayHash(new DateTime(year, 1, 1));
+            int difference = hash - approx_hash;
 
             while ((difference - ACCUM_DAYS_FOR_MTHS[month_index]) < 0)
             {
                 month_index -= 1;
-
-                dt = new DateTime(approx_year, month_index + 1, 1);
-                approx_hash = GetDayHash(dt);
             }
 
-            difference = hash - approx_hash;
+            return month_index + 1;
+        }
 
-            dt = new DateTime(approx_year, month_index + 1, difference + 1);
+        internal static int ReverseDayHash_FindDay(int year, int month, int hash)
+        {
+            int approx_hash = GetDayHash(new DateTime(year, month, 1));
+            int difference = hash - approx_hash;
 
-            return dt;
+            return difference + 1;
+        }
+
+        internal static DateTime ReverseDayHash(int hash)
+        {
+            int year = ReverseDayHash_FindYear(hash);
+            int month = ReverseDayHash_FindMonth(year, hash);
+            int day = ReverseDayHash_FindDay(year, month, hash);
+
+            return new DateTime(year, month, day);
         }
 
         private static bool IsLeapYear(DateTime date)
@@ -170,6 +176,9 @@ namespace WerkDaze.Api
 
         public static int BusinessDaysBetweenTwoDates(DateTime firstDate, DateTime secondDate)
         {
+
+
+
             throw new NotImplementedException();
         }
 
