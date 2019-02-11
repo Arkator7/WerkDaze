@@ -11,6 +11,8 @@ namespace WerkDaze.Api
         private const int WEEK = 7;
         private const int WORK_WEEK = 5;
 
+        private const int INT_INIT = 0;
+
         private const string FILE = "./NSWHoliday.json";
 
         private readonly IDateHash idh;
@@ -34,7 +36,7 @@ namespace WerkDaze.Api
             int dto1 = dh.GetDateHash(firstDate) + 1;
             int dto2 = dh.GetDateHash(secondDate);
 
-            int workDays = 0;
+            int workDays = INT_INIT;
 
             int difference = dto2 - dto1;
 
@@ -90,7 +92,7 @@ namespace WerkDaze.Api
             var dh = new DateHash();
 
             var holidays = LoadData<HolidayResponse>(FILE);
-            var holidaysInRange = 0;
+            var holidaysInRange = INT_INIT;
 
             int year = firstDate.Year;
 
@@ -168,7 +170,7 @@ namespace WerkDaze.Api
             var dh = new DateHash();
 
             // Adjust dayoftheweek hash
-            int targetDayOfTheWeek = 0;
+            int targetDayOfTheWeek = INT_INIT;
 
             // Old (< 2/9/1752)  0 = Friday (5)
             // New (> 14/9/1752) 0 = Monday (1)
@@ -210,7 +212,12 @@ namespace WerkDaze.Api
             return response;
         }
 
-        // https://codereview.stackexchange.com/questions/193847/find-easter-on-any-given-year
+        /// <summary>
+        /// Determine when Easter Sunday is in a given year
+        /// https://codereview.stackexchange.com/questions/193847/find-easter-on-any-given-year
+        /// </summary>
+        /// <param name="year"></param>
+        /// <returns>Determine when Easter Sunday is in a given year</returns>
         private DateTime Easter(int year)
         {
             int a = year % 19;
