@@ -3,21 +3,31 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using WerkDaze.Api.Interface;
 
 [assembly: InternalsVisibleTo("WerkDaze.UnitTests")]
 namespace WerkDaze.Api
 {
-    public class BusinessDayCounter
+    public class BusinessDayCounter : IBusinessDayCounter
     {
-        public const int WEEK = 7;
-        public const int WORK_WEEK = 5;
+        private const int WEEK = 7;
+        private const int WORK_WEEK = 5;
 
-        public const string FILE = "./NSWHoliday.json"; 
+        private const string FILE = "./NSWHoliday.json";
 
-        public static int WeekdaysBetweenTwoDates(DateTime firstDate, DateTime secondDate)
+        private readonly IDateHash idh;
+
+        public BusinessDayCounter(IDateHash idh)
         {
-            int dto1 = DateHash.GetDateHash(firstDate);
-            int dto2 = DateHash.GetDateHash(secondDate);
+            this.idh = idh;
+        }
+
+        public int WeekdaysBetweenTwoDates(DateTime firstDate, DateTime secondDate)
+        {
+            var dh = new DateHash();
+
+            int dto1 = dh.GetDateHash(firstDate);
+            int dto2 = dh.GetDateHash(secondDate);
 
             int difference = dto2 - dto1;
 
@@ -35,7 +45,7 @@ namespace WerkDaze.Api
                 dto1 += weeks * WEEK;
 
                 return (weeks * WORK_WEEK) + 
-                    WeekdaysBetweenTwoDates(DateHash.ReverseDayHash(dto1), secondDate);
+                    WeekdaysBetweenTwoDates(dh.ReverseDayHash(dto1), secondDate);
             }
 
             int workDays = 0;
@@ -43,9 +53,9 @@ namespace WerkDaze.Api
             // Loop Exclusive to end date
             while (dto1 < dto2 - 1)
             {
-                DateTime d1 = DateHash.ReverseDayHash(dto1);
+                DateTime d1 = dh.ReverseDayHash(dto1);
 
-                if (!DateHash.IsWeekend(d1))
+                if (!dh.IsWeekend(d1))
                 {
                     workDays += 1;
                 }
@@ -56,13 +66,15 @@ namespace WerkDaze.Api
             return workDays;
         }
 
-        public static int BusinessDaysBetweenTwoDates(DateTime firstDate, DateTime secondDate)
+        public int BusinessDaysBetweenTwoDates(DateTime firstDate, DateTime secondDate)
         {
             return WeekdaysBetweenTwoDates(firstDate, secondDate) - HolidaysBetweenDates(firstDate, secondDate);
         }
 
-        internal static int HolidaysBetweenDates(DateTime firstDate, DateTime secondDate)
+        internal int HolidaysBetweenDates(DateTime firstDate, DateTime secondDate)
         {
+            var dh = new DateHash();
+
             var holidays = LoadData<HolidayResponse>(FILE);
             var holidaysInRange = 0;
 
@@ -77,7 +89,7 @@ namespace WerkDaze.Api
                     if (holiday.Day.HasValue)
                     {
                         DateTime date = new DateTime(year, holiday.Month, holiday.Day.Value);
-                        int dateHash = DateHash.GetDateHash(date);
+                        int dateHash = dh.GetDateHash(date);
 
                         holidayHash.Add(dateHash);
                     } else if (holiday.Iteration.HasValue && holiday.DayOfWeek.HasValue)
@@ -89,8 +101,8 @@ namespace WerkDaze.Api
                     }
                 }
 
-                int startDateHash = DateHash.GetDateHash(firstDate);
-                int endDateHash = DateHash.GetDateHash(secondDate);
+                int startDateHash = dh.GetDateHash(firstDate);
+                int endDateHash = dh.GetDateHash(secondDate);
 
                 foreach (var hash in holidayHash)
                 {
@@ -111,8 +123,10 @@ namespace WerkDaze.Api
         // Old (< 2/9/1752)  0 = Friday (5)
         // New (> 14/9/1752) 0 = Monday (1)
         // holiday.DayOfWeek 0 = Sunday (0)
-        private static int FindHolidayIteration(Holiday holiday, int year)
+        private int FindHolidayIteration(Holiday holiday, int year)
         {
+            var dh = new DateHash();
+
             // Adjust dayoftheweek hash
             int targetDayOfTheWeek = 0;
 
@@ -130,21 +144,21 @@ namespace WerkDaze.Api
 
             // Get first day of the month
             int day = 1;
-            int dayOfTheWeek = DateHash.GetDay(new DateTime(year, holiday.Month, day));
+            int dayOfTheWeek = dh.GetDay(new DateTime(year, holiday.Month, day));
 
             // Get first XDay of the month *e.g. Monday
             while (dayOfTheWeek != targetDayOfTheWeek)
             {
                 day += 1;
-                dayOfTheWeek = DateHash.GetDay(new DateTime(year, holiday.Month, day));
+                dayOfTheWeek = dh.GetDay(new DateTime(year, holiday.Month, day));
             }
 
-            return DateHash.GetDay(
+            return dh.GetDay(
                 new DateTime(year, holiday.Month, day + (WEEK * (holiday.Iteration.Value - 1)))
             );
         }
 
-        private static T LoadData<T>(string path)
+        private T LoadData<T>(string path)
         {
             T response;
 
@@ -158,7 +172,7 @@ namespace WerkDaze.Api
         }
 
         // https://codereview.stackexchange.com/questions/193847/find-easter-on-any-given-year
-        private static DateTime Easter(int year)
+        private DateTime Easter(int year)
         {
             int a = year % 19;
             int b = year / 100;
