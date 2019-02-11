@@ -5,7 +5,6 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using WerkDaze.Api.Interface;
 
-[assembly: InternalsVisibleTo("WerkDaze.UnitTests")]
 namespace WerkDaze.Api
 {
     public class BusinessDayCounter : IBusinessDayCounter

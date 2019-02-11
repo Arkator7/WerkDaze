@@ -18,6 +18,7 @@ namespace WerkDaze.Api
         }
 
         public List<Holiday> Holiday { get; set; }
+
         public bool HasEaster { get; set; }
     }
 }
