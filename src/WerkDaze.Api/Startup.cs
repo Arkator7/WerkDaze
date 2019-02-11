@@ -16,7 +16,6 @@ namespace WerkDaze.Api
         {
             services.AddTransient<IBusinessDayCounter, BusinessDayCounter>();
             services.AddTransient<IDateHash, DateHash>();
-
         }
     }
 }

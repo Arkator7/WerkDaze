@@ -31,12 +31,18 @@ namespace WerkDaze.Api
             //If month is beyond Feb and is a leap year
             if (month > 1 && IsLeapYear(date))
             {
-                leapDays += 1;
+                leapDays++;
             }
 
             return (year * STD_DAY_IN_YEAR) + leapDays + ACCUM_DAYS_FOR_MTHS[month] + day;
         }
 
+        /// <summary>
+        /// Helper function (Year) to ReverseDayHash
+        /// </summary>
+        /// <param name="year"></param>
+        /// <param name="hash"></param>
+        /// <returns>Find the hash year</returns>        
         private int ReverseDayHash_FindYear(int hash)
         {
             int year = Math.Max((hash / STD_DAY_IN_YEAR) - 1, 1);
@@ -52,7 +58,7 @@ namespace WerkDaze.Api
             // Self-correction
             while (difference >= STD_DAY_IN_YEAR)
             {
-                year += 1;
+                year++;
                 approx_hash = GetDateHash(new DateTime(year, 1, 1));
                 difference = hash - approx_hash;
             }
@@ -60,6 +66,12 @@ namespace WerkDaze.Api
             return year;
         }
 
+        /// <summary>
+        /// Helper function (Month) to ReverseDayHash
+        /// </summary>
+        /// <param name="year"></param>
+        /// <param name="hash"></param>
+        /// <returns>Find the hash month</returns>
         private int ReverseDayHash_FindMonth(int year, int hash)
         {
             int month_index = MONTHS_IN_YEAR - 1;
@@ -80,6 +92,13 @@ namespace WerkDaze.Api
             return month_index + 1;
         }
 
+        /// <summary>
+        /// Helper function (Day) to ReverseDayHash
+        /// </summary>
+        /// <param name="year"></param>
+        /// <param name="month"></param>
+        /// <param name="hash"></param>
+        /// <returns>Find the hash day</returns>
         private int ReverseDayHash_FindDay(int year, int month, int hash)
         {
             int approx_hash = GetDateHash(new DateTime(year, month, 1));
@@ -88,6 +107,11 @@ namespace WerkDaze.Api
             return difference + 1;
         }
 
+        /// <summary>
+        /// Given a hash, returns the date
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <returns>The date represented by the hash</returns>
         public DateTime ReverseDayHash(int hash)
         {
             int year = ReverseDayHash_FindYear(hash);
@@ -97,6 +121,12 @@ namespace WerkDaze.Api
             return new DateTime(year, month, day);
         }
 
+        /// <summary>
+        /// Determine whether a year is a leap year
+        /// https://en.wikipedia.org/wiki/Leap_year
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns>True to all leap years</returns>
         private bool IsLeapYear(DateTime date)
         {
             if (date.Year % 4 != 0) return false;
@@ -106,10 +136,10 @@ namespace WerkDaze.Api
         }
 
         /// <summary>
-        /// Returns modulus of GetDateHash()
+        /// The modulus of the hash from GetDateHash()
         /// </summary>
         /// <param name="date"></param>
-        /// <returns></returns>
+        /// <returns>Modulus of GetDateHash()</returns>
         public int GetDay(DateTime date)
         {
             return GetDateHash(date) % 7;
