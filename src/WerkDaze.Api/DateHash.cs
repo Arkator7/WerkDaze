@@ -40,8 +40,14 @@ namespace WerkDaze.Api
         private int ReverseDayHash_FindYear(int hash)
         {
             int year = Math.Max((hash / STD_DAY_IN_YEAR) - 1, 1);
-            int approx_hash = GetDateHash(new DateTime(year, 1, 1));
+            DateTime yearOnlyDate = new DateTime(year, 1, 1);
+            int approx_hash = GetDateHash(yearOnlyDate);
             int difference = hash - approx_hash;
+
+            if (IsLeapYear(yearOnlyDate) && difference > ACCUM_DAYS_FOR_MTHS[1])
+            {
+                difference--;
+            }
 
             // Self-correction
             while (difference >= STD_DAY_IN_YEAR)
@@ -57,8 +63,14 @@ namespace WerkDaze.Api
         private int ReverseDayHash_FindMonth(int year, int hash)
         {
             int month_index = MONTHS_IN_YEAR - 1;
-            int approx_hash = GetDateHash(new DateTime(year, 1, 1));
+            DateTime yearOnlyDate = new DateTime(year, 1, 1);
+            int approx_hash = GetDateHash(yearOnlyDate);
             int difference = hash - approx_hash;
+
+            if (IsLeapYear(yearOnlyDate) && difference > ACCUM_DAYS_FOR_MTHS[1])
+            {
+                difference--;
+            }
 
             while ((difference - ACCUM_DAYS_FOR_MTHS[month_index]) < 0)
             {
