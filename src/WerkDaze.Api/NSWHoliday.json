@@ -1,0 +1,35 @@
+﻿{
+  "Holiday": [
+    {
+      "Month": 1,
+      "Day": 1
+    },
+    {
+      "Month": 1,
+      "Day": 26
+    },
+    {
+      "Month": 4,
+      "Day": 25
+    },
+    {
+      "Month": 6,
+      "Iteration": 2,
+      "DayOfWeek": 1
+    },
+    {
+      "Month": 10,
+      "Iteration": 1,
+      "DayOfWeek": 1
+    },
+    {
+      "Month": 12,
+      "Day": 25
+    },
+    {
+      "Month": 12,
+      "Day": 26
+    }
+  ],
+  "HasEaster": true
+}

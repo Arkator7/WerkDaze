@@ -4,12 +4,12 @@ namespace WerkDaze.Api
 {
     class DateHash
     {
-        public static int STD_DAY_IN_YEAR = 365;
+        public const int STD_DAY_IN_YEAR = 365;
         public static int[] ACCUM_DAYS_FOR_MTHS = 
             new int[] { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
-        public static int LEAP = 4;
-        public static int CENTURY = 100;
-        public static int MONTHS_IN_YEAR = 12;
+        public const int LEAP = 4;
+        public const int CENTURY = 100;
+        public const int MONTHS_IN_YEAR = 12;
 
         /// <summary>
         /// Assign a value to each date, starting with 1/1/0001 (being 0) to 31/12/9999. 
@@ -43,7 +43,7 @@ namespace WerkDaze.Api
             int difference = hash - approx_hash;
 
             // Self-correction
-            while (difference > STD_DAY_IN_YEAR)
+            while (difference >= STD_DAY_IN_YEAR)
             {
                 year += 1;
                 approx_hash = GetDateHash(new DateTime(year, 1, 1));
