@@ -1,7 +1,5 @@
-﻿using NSubstitute;
-using System;
+﻿using System;
 using WerkDaze.Api;
-using WerkDaze.Api.Interface;
 using Xunit;
 
 namespace WerkDaze.UnitTests
@@ -17,8 +15,7 @@ namespace WerkDaze.UnitTests
         public void WeekdaysBetweenTwoDates_SampleData_ReturnCorrectValue(
             int result, int firstDateYear, int firstDateMonth, int firstDateDay, int secondDateYear, int secondDateMonth, int secondDateDay)
         {
-            var dhMock = Substitute.For<IDateHash>();
-            var bdc = new BusinessDayCounter(dhMock);
+            var bdc = new BusinessDayCounter();
 
             Assert.Equal(result, bdc.WeekdaysBetweenTwoDates(
                 new DateTime(firstDateYear, firstDateMonth, firstDateDay),
@@ -43,8 +40,7 @@ namespace WerkDaze.UnitTests
         public void BusinessDaysBetweenTwoDates_SampleData_ReturnCorrectValue(
             int result, int firstDateYear, int firstDateMonth, int firstDateDay, int secondDateYear, int secondDateMonth, int secondDateDay)
         {
-            var dhMock = Substitute.For<IDateHash>();
-            var bdc = new BusinessDayCounter(dhMock);
+            var bdc = new BusinessDayCounter();
 
             Assert.Equal(result, bdc.BusinessDaysBetweenTwoDates(
                 new DateTime(firstDateYear, firstDateMonth, firstDateDay),

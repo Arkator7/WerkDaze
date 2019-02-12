@@ -15,13 +15,6 @@ namespace WerkDaze.Api
 
         private const string FILE = "./NSWHoliday.json";
 
-        private readonly IDateHash idh;
-
-        public BusinessDayCounter(IDateHash idh)
-        {
-            this.idh = idh;
-        }
-
         /// <summary>
         /// Calculates number of weekdays between two dates
         /// </summary>
